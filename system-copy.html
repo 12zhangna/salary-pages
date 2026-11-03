@@ -131,6 +131,7 @@ tr.total .col-actions{background:#FEF2F2!important}
     <div>
       <h1>奕氪集团数据分析</h1>
       <div class="sub">单机版 · 多月数据管理 · 修改输入自动重算 · 个税在税务端处理后粘贴</div>
+      <div class="sub" id="publish-info" style="display:none;margin-top:4px;font-size:11px">📅 数据发布时间：<span id="publish-time"></span> · <a href="javascript:void(0)" onclick="forceRefresh()" style="color:#fff;text-decoration:underline">🔄 强制刷新</a></div>
     </div>
     <div class="actions">
       <div class="month-bar">
@@ -3954,6 +3955,17 @@ function init() {
           months = d.months;
           currentMonth = d.currentMonth || Object.keys(months).sort().reverse()[0];
           if (d.params) params = Object.assign({}, params, d.params);
+          // Show publish time
+          if (d.exportTime) {
+            var pt = document.getElementById('publish-info');
+            var pts = document.getElementById('publish-time');
+            if (pt && pts) {
+              var t = new Date(d.exportTime);
+              function pad0(n) { return n < 10 ? '0' + n : '' + n; }
+              pts.textContent = t.getFullYear() + '-' + pad0(t.getMonth()+1) + '-' + pad0(t.getDate()) + ' ' + pad0(t.getHours()) + ':' + pad0(t.getMinutes());
+              pt.style.display = 'block';
+            }
+          }
           loadParams();
           renderMonthSelect();
           updateFilters();
@@ -4094,6 +4106,12 @@ function publishVersion() {
     alert('发布文件已生成！\n\n接下来请双击运行：\nC:\\Users\\admin\\salary-pages\\发布-副本.bat\n\n文件将自动推送到 GitHub，对方刷新页面即可看到最新数据。');
   } catch(err) {
     alert('发布失败：' + err.message);
+  }
+}
+
+function forceRefresh() {
+  if (confirm('确定要强制刷新页面吗？\n\n这将绕过浏览器缓存，从服务器重新加载最新数据。')) {
+    location.reload(true);
   }
 }
 
